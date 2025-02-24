@@ -1,0 +1,5 @@
+module SDL3 [system][extern_c] {
+    umbrella header "include/UmbrellaSDL.h"
+    link "SDL3"    // This tells the linker to use SDL3.lib (or SDL3.dll's import lib)
+    export *
+}
