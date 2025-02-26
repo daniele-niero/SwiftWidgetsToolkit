@@ -2,9 +2,9 @@ name: Build and Test on Windows
 
 on:
   push:
-    branches: [ FirstSteps ]
+    branches: [ WorkflowTesting ]
   pull_request:
-    branches: [ FirstSteps ]
+    branches: [ WorkflowTesting ]
 
 jobs:
   build:
