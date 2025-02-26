@@ -1,0 +1,44 @@
+name: Build and Test on Windows
+
+on:
+  push:
+    branches: [ FirstSteps ]
+  pull_request:
+    branches: [ FirstSteps ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Optionally, set up Swift (if you need a specific version)
+      - name: Set up Swift
+        uses: fwal/setup-swift@v1
+        with:
+          swift-version: "6.0"  # adjust as needed
+
+      - name: Install vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+          cd C:\vcpkg
+          bootstrap-vcpkg.bat
+
+      - name: Install SDL3 via vcpkg
+        run: |
+          C:\vcpkg\vcpkg.exe install sdl3:x64-windows
+        env:
+          VCPKG_DEFAULT_TRIPLET: "x64-windows"
+
+      # Note: adjust your Package.swift to use these paths instead of hardcoded ones.
+      # For example, change "C:/Dev/vcpkg/installed/x64-windows/include" to "C:/vcpkg/installed/x64-windows/include"
+      - name: Build Swift Project
+        run: swift build --package-path .
+        env:
+          # You can also pass the vcpkg root via an environment variable if you want to make your Package.swift more flexible.
+          VCPKG_ROOT: "C:\vcpkg"
+
+      - name: Run Tests
+        run: swift test --package-path .
