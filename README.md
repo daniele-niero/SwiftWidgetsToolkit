@@ -9,3 +9,4 @@ SwiftWidgetToolkit is a toolkit for creating widgets using Swift and SDL3.
 
 SwiftWidgetToolkit provides a set of tools and utilities for building graphical widgets in Swift. It leverages SDL3 for rendering and input handling.
 
+## More
