@@ -6,16 +6,20 @@ public struct SwtAppMetadata {
     let version: String
     let identifier: String
 
-    static let `default` = SwtAppMetdata(name: "SwtWidget App", version: "1.0", identifier: "com.default.app")
+    static public let `default` = SwtAppMetadata(name: "SwtWidget App", version: "1.0", identifier: "com.default.app")
 }
 
 
 @MainActor
 public class SwtApp {
-    static let shared: SwtApp?
+    static var shared: SwtApp?
     private var mainWidgets: [SwtWidget] = []
+
+    enum SwtAppError: Error {
+        case InitializationFailed(String)
+    }
     
-    private init(metadata: SwtAppMetadata = .default) {
+    private init(metadata: SwtAppMetadata = .default) throws {
         // Todo: 
         // * Maybe we should set a more rich SDL_SetAppMetadataProperty
         // * Maybe a Getter should be good in this class, using SDL_GetAppMatadata
@@ -23,26 +27,27 @@ public class SwtApp {
         
         // Initialise SDL video
         if SDL_Init(SDL_INIT_VIDEO) == false {
-            print("Couldn't initialise App: \(String(cString: SDL_GetError()))", asError: true)
-            return SDL_APP_FAILURE
+            let errorMessage = "Couldn't initialise App: \(String(cString: SDL_GetError()))" 
+            // print("Couldn't initialise App: \(String(cString: SDL_GetError()))", asError: true)
+            throw SwtAppError.InitializationFailed(errorMessage)
         }
     }
 
     public static func create(metadata: SwtAppMetadata = .default) -> SwtApp {
         if shared == nil {
-            shared = SwtApp(metadata: metadata)
+            shared = try SwtApp(metadata: metadata)
         }
-        return SwtApp(metadata: metadata)
+        return shared!
     }
 
     public func SetMetadata(_ metadata: SwtAppMetadata) {
         SDL_SetAppMetadata(metadata.name, metadata.version, metadata.identifier)
     }
 
-    public GetMetadata() -> SwtAppMetadata {
-        let name = SDL_GetAppMetadataProperty("name")
-        let version = SDL_GetAppMetadataProperty("version")
-        let identifier = SDL_GetAppMetadataProperty("identifier")
+    public func GetMetadata() -> SwtAppMetadata {
+        let name: String = String(cString: SDL_GetAppMetadataProperty("name"))
+        let version: String = String(cString: SDL_GetAppMetadataProperty("version"))
+        let identifier: String = String(cString: SDL_GetAppMetadataProperty("identifier"))
 
         return SwtAppMetadata(name: name, version: version, identifier: identifier)
     }

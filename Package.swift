@@ -23,10 +23,10 @@ let windowsLinkerSettings: [LinkerSetting] = []
 let package = Package(
     name: "SwiftWidgetToolkit",
     products: [
-        // .library(
-        //     name: "SwiftWT",
-        //     targets: ["SwiftWT"]
-        // ),
+        .library(
+            name: "SwiftWT",
+            targets: ["SwiftWT"]
+        ),
         .executable(
             name: "WidgetsExample",
             targets: ["WidgetsExample"]
@@ -40,16 +40,16 @@ let package = Package(
             pkgConfig: nil,
             providers: []
         ),
-        // .target(
-        //     name: "SwiftWT",
-        //     dependencies: ["CSDL3"],
-        //     cSettings: windowsCSettings,
-        //     linkerSettings: windowsLinkerSettings
-        // ),
-        // .testTarget(
-        //     name: "SwiftWTTests",
-        //     dependencies: ["SwiftWT"]
-        // ),
+        .target(
+            name: "SwiftWT",
+            dependencies: ["CSDL3"],
+            cSettings: windowsCSettings,
+            linkerSettings: windowsLinkerSettings
+        ),
+        .testTarget(
+            name: "SwiftWTTests",
+            dependencies: ["SwiftWT"]
+        ),
         .executableTarget(
             name: "WidgetsExample",
             dependencies: ["CSDL3"],
