@@ -26,8 +26,7 @@ jobs:
       - name: Run Swift Installer Silently
         shell: pwsh
         run: |
-          # Adjust these flags as necessary for your installer.
-          & .\swift_installer.exe /quiet /norestart
+          .\swift_installer.exe /quiet /norestart
 
       - name: Swift Version
         shell: pwsh
