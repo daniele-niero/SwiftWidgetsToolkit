@@ -16,6 +16,24 @@ jobs:
       # - name: Checkout repository
       #   uses: actions/checkout@v3
 
+      - name: Download Swift Installer
+        shell: pwsh
+        run: |
+          $installerUrl = "https://download.swift.org/swift-6.0.3-release/windows10/swift-6.0.3-RELEASE/swift-6.0.3-RELEASE-windows10.exe"
+          Write-Output "Downloading Swift installer from $installerUrl..."
+          Invoke-WebRequest -Uri $installerUrl -OutFile "swift_installer.exe"
+
+      - name: Run Swift Installer Silently
+        shell: pwsh
+        run: |
+          # Adjust these flags as necessary for your installer.
+          & .\swift_installer.exe /quiet /norestart
+
+      - name: Swift Version
+        shell: pwsh
+        run: swift -v
+
+
       # - name: Set up Swift
       #   uses: compnerd/gha-setup-swift@main
       #   with:
@@ -28,9 +46,9 @@ jobs:
       #     cd C:\vcpkg
       #     bootstrap-vcpkg.bat
 
-      - name: Install SDL3 via vcpkg
-        run: |
-          C:\vcpkg\vcpkg.exe install SDL3
+      # - name: Install SDL3 via vcpkg
+      #   run: |
+      #     C:\vcpkg\vcpkg.exe install SDL3
 
       # - name: Build Swift Project
       #   run: swift build --package-path .
