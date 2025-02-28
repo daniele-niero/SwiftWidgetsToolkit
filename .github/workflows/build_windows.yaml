@@ -21,7 +21,7 @@ jobs:
         run: |
           $installerUrl = "https://download.swift.org/swift-6.0.3-release/windows10/swift-6.0.3-RELEASE/swift-6.0.3-RELEASE-windows10.exe"
           Write-Output "Downloading Swift installer from $installerUrl..."
-          Invoke-WebRequest -Uri $installerUrl -OutFile "swift_installer.exe"
+          curl.exe -L -s -o .\swift_installer.exe $installerUrl
           .\swift_installer.exe /quiet /norestart
 
       - name: Swift Version
