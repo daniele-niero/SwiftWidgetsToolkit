@@ -1,4 +1,4 @@
-name: Build and Test on Windows
+name: Build on Windows
 
 on:
   push:
@@ -16,24 +16,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      #- name: Setup Swift
-      #  uses: swift-actions/setup-swift@v2
-      #  with:
-      #    swift-version: "6.0"
-      #- name: Get swift version
-      #  run: swift --version # Swift 6.0.2
+      - name: Setup Swift
+        uses: compnerd/gha-setup-swift@main
+        with:
+          branch: swift-6.0.3-release
+          tag: 6.0.3-RELEASE
+      
+      # - name: Install vcpkg
+      #   run: |
+      #     git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+      #     cd C:\vcpkg
+      #     bootstrap-vcpkg.bat
 
-      - name: Install vcpkg
-        run: |
-          git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
-          cd C:\vcpkg
-          bootstrap-vcpkg.bat
-
-      - name: Install SDL3 via vcpkg
-        run: |
-          C:\vcpkg\vcpkg.exe install sdl3:x64-windows
-        env:
-          VCPKG_DEFAULT_TRIPLET: "x64-windows"
+      # - name: Install SDL3 via vcpkg
+      #   run: |
+      #     C:\vcpkg\vcpkg.exe install sdl3:x64-windows
+      #   env:
+      #     VCPKG_DEFAULT_TRIPLET: "x64-windows"
 
       # Note: adjust your Package.swift to use these paths instead of hardcoded ones.
       # For example, change "C:/Dev/vcpkg/installed/x64-windows/include" to "C:/vcpkg/installed/x64-windows/include"

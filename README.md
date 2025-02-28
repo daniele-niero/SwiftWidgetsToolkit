@@ -1,6 +1,13 @@
 # SwiftWidgetToolkit
 
-![Build Status - Windows](https://github.com/daniele-niero/SwiftWidgetsToolkit/actions/workflows/build_windows.yaml/badge.svg?branch=WorkflowTesting)
+![Build Status - Windows](https://github.com/daniele-niero/SwiftWidgetsToolkit/actions/workflows/build_windows.yaml/badge.svg?branch=WorkflowTesting)  
+
+
+
+
+
+<!-- 
+[![Build and Test on Windows](https://github.com/daniele-niero/SwiftWidgetsToolkit/actions/workflows/build_windows.yaml/badge.svg?branch=WorkflowTesting)](https://github.com/daniele-niero/SwiftWidgetsToolkit/actions/workflows/build_windows.yaml) -->
 
 
 SwiftWidgetToolkit is a toolkit for creating widgets using Swift and SDL3.
