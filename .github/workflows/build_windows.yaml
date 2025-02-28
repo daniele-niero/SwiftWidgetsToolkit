@@ -15,7 +15,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        path: ProjectPath
+        with:
+          path: ProjectPath
 
       - name: Set up Swift
         uses: compnerd/gha-setup-swift@main
