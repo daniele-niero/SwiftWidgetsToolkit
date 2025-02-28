@@ -49,23 +49,16 @@ jobs:
       - name: Swift Version
         shell: pwsh
         run: swift -v
-
-
-      # - name: Set up Swift
-      #   uses: compnerd/gha-setup-swift@main
-      #   with:
-      #     branch: swift-6.0.3-release
-      #     tag: 6.0.3-RELEASE
       
-      # - name: Install vcpkg
-      #   run: |
-      #     git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
-      #     cd C:\vcpkg
-      #     bootstrap-vcpkg.bat
+      - name: Install vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+          cd C:\vcpkg
+          bootstrap-vcpkg.bat
 
-      # - name: Install SDL3 via vcpkg
-      #   run: |
-      #     C:\vcpkg\vcpkg.exe install SDL3
+      - name: Install SDL3 via vcpkg
+        run: |
+          C:\vcpkg\vcpkg.exe install SDL3
 
-      # - name: Build Swift Project
-      #   run: swift build --package-path .
+      - name: Build Swift Project
+        run: swift build --package-path .
