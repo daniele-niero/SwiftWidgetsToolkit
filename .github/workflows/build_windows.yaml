@@ -13,34 +13,40 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
       - name: Setup Swift
-        uses: compnerd/gha-setup-swift@main
-        with:
-          branch: swift-6.0.3-release
-          tag: 6.0.3-RELEASE
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          winget install --id Microsoft.VisualStudio.2022.Community --exact --force --custom "--add Microsoft.VisualStudio.Component.Windows11SDK.22000 --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.VC.Tools.ARM64"
+
+        # uses: compnerd/gha-setup-swift@main
+        # with:
+        #   branch: swift-6.0.3-release
+        #   tag: 6.0.3-RELEASE
       
-      - name: Install vcpkg
-        run: |
-          git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
-          cd C:\vcpkg
-          bootstrap-vcpkg.bat
+      # - name: Install vcpkg
+      #   run: |
+      #     git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+      #     cd C:\vcpkg
+      #     bootstrap-vcpkg.bat
 
-      - name: Install SDL3 via vcpkg
-        run: |
-          C:\vcpkg\vcpkg.exe install sdl3:x64-windows
-        env:
-          VCPKG_DEFAULT_TRIPLET: "x64-windows"
+      # - name: Install SDL3 via vcpkg
+      #   run: |
+      #     C:\vcpkg\vcpkg.exe install sdl3:x64-windows
+      #   env:
+      #     VCPKG_DEFAULT_TRIPLET: "x64-windows"
 
-      # Note: adjust your Package.swift to use these paths instead of hardcoded ones.
-      # For example, change "C:/Dev/vcpkg/installed/x64-windows/include" to "C:/vcpkg/installed/x64-windows/include"
-      - name: Build Swift Project
-        run: swift build --package-path .
-        env:
-          # You can also pass the vcpkg root via an environment variable if you want to make your Package.swift more flexible.
-          VCPKG_ROOT: "C:\vcpkg"
+      # - name: Checkout repository
+      #   uses: actions/checkout@v3
+
+
+      # # Note: adjust your Package.swift to use these paths instead of hardcoded ones.
+      # # For example, change "C:/Dev/vcpkg/installed/x64-windows/include" to "C:/vcpkg/installed/x64-windows/include"
+      # - name: Build Swift Project
+      #   run: swift build --package-path .
+      #   env:
+      #     # You can also pass the vcpkg root via an environment variable if you want to make your Package.swift more flexible.
+      #     VCPKG_ROOT: "C:\vcpkg"
 
       #- name: Run Tests
       #  run: swift test --package-path .
