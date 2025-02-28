@@ -24,6 +24,8 @@ jobs:
           curl.exe -L -s -o .\swift_installer.exe $installerUrl
 
       - name: Install Swift
+        shell: pwsh
+        run:
           Start-Process .\swift_installer.exe -ArgumentList /install, /quiet, /norestart -Wait -PassThru -Verb RunAs
 
       - name: Swift Version
