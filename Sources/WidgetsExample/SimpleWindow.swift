@@ -4,7 +4,6 @@ func DoSomethig() {
     print("Starting Prova...")
 
     // Initialize SDL video systems
-    import SDL
     guard SDL_Init(SDL_INIT_VIDEO) == true else {
         fatalError("SDL could not initialize! Error: \(String(cString: SDL_GetError()))")
     }
