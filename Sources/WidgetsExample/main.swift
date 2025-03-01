@@ -80,6 +80,16 @@ public class SwtApplication {
             SDL_FPoint(x: 100, y: 354)
         ]
         
+// Clear the renderer to a grey background.
+SDL_SetRenderDrawColor(renderer, 100, 100, 100, UInt8(SDL_ALPHA_OPAQUE))
+// Clear the renderer to a grey background.
+SDL_SetRenderDrawColor(renderer, 100, 100, 100, UInt8(SDL_ALPHA_OPAQUE))
+// Clear the renderer to a grey background.
+        SDL_SetRenderDrawColor(renderer, 100, 100, 100, UInt8(SDL_ALPHA_OPAQUE))
+        // Clear the renderer to a grey background.
+        SDL_SetRenderDrawColor(renderer, 100, 100, 100, UInt8(SDL_ALPHA_OPAQUE))
+        // Clear the renderer to a grey background.
+        SDL_SetRenderDrawColor(renderer, 100, 100, 100, UInt8(SDL_ALPHA_OPAQUE))
         // Clear the renderer to a grey background.
         SDL_SetRenderDrawColor(renderer, 100, 100, 100, UInt8(SDL_ALPHA_OPAQUE))
         SDL_RenderClear(renderer)
@@ -94,7 +104,7 @@ public class SwtApplication {
         // Draw connected green lines.
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, UInt8(SDL_ALPHA_OPAQUE))
         // SDL_RenderLines expects a pointer to SDL_FPoint and a count.
-        linePoints.withUnsafeBufferPointer { buffer in
+        _ = linePoints.withUnsafeBufferPointer { buffer in
             SDL_RenderLines(renderer, buffer.baseAddress, Int32(buffer.count))
         }
         

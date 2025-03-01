@@ -1,0 +1,32 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "swift",
+			"args": ["build"],
+			"group": {"kind": "build", "isDefault": true},
+			"label": "swift: Build Debug",
+		},
+		{
+			"type": "swift",
+			"args": ["build", "--configuration", "release"],
+			"group": {"kind": "build", "isDefault": true},
+			"label": "swift: Build Release"
+		},
+		{
+			"type": "swift",
+			"args": ["test"],
+			"group": {"kind": "build", "isDefault": true},
+			"label": "swift: Test"
+		},
+		{
+			"label": "Run WidgetsExample",
+			"type": "shell",
+			"command": "${workspaceFolder:SwiftWidgetToolkit}/.build/debug/WidgetTests",
+			"windows": {
+				"command": "${workspaceFolder:SwiftWidgetToolkit}\\.build\\debug\\WidgetsExample.exe"
+			},
+			"group": {"kind": "build", "isDefault": true},
+		}
+	]
+}

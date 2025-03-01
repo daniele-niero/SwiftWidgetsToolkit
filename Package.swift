@@ -3,21 +3,24 @@ import PackageDescription
 import Foundation
 
 #if os(Windows)
-let vcpkgRoot = ProcessInfo.processInfo.environment["VCPKG_ROOT"] ?? "C:/vcpkg"
-let sdlIncludePath = "\(vcpkgRoot)/installed/x64-windows/include"
-let sdlLibPath = "\(vcpkgRoot)/installed/x64-windows/lib"
+    var vcpkgRoot = ProcessInfo.processInfo.environment["VCPKG_ROOT"] ?? "C:/vcpkg"
+    // ensure forward slashes
+    vcpkgRoot = vcpkgRoot.replacingOccurrences(of: "\\", with: "/")
 
-// These settings will only be applied on Windows.
-let windowsCSettings: [CSetting] = [
-    .unsafeFlags(["-I", sdlIncludePath])
-]
-let windowsLinkerSettings: [LinkerSetting] = [
-    .unsafeFlags(["-I", sdlIncludePath, "-L", sdlLibPath, "-Xlinker", "/IGNORE:4217"])
-]
+    let sdlIncludePath = "\(vcpkgRoot)/installed/x64-windows/include"
+    let sdlLibPath = "\(vcpkgRoot)/installed/x64-windows/lib"
+
+    // These settings will only be applied on Windows.
+    let windowsCSettings: [CSetting] = [
+        .unsafeFlags(["-I", sdlIncludePath])
+    ]
+    let windowsLinkerSettings: [LinkerSetting] = [
+        .unsafeFlags(["-I", sdlIncludePath, "-L", sdlLibPath, "-Xlinker", "/IGNORE:4217"])
+    ]
 #else
-// For non-Windows platforms, no extra settings are required.
-let windowsCSettings: [CSetting] = []
-let windowsLinkerSettings: [LinkerSetting] = []
+    // For non-Windows platforms, no extra settings are required.
+    let windowsCSettings: [CSetting] = []
+    let windowsLinkerSettings: [LinkerSetting] = []
 #endif
 
 let package = Package(

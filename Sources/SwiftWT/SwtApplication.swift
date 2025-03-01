@@ -3,7 +3,7 @@ import SDL3
 
 // Application Errors
 enum SwtAppError: Error {
-    case FailedToInitialise(String)
+    case FailedToInitialize(String)
     case FailedToRun(String)
     case MetadataError(String)
 }
@@ -32,12 +32,8 @@ public struct SwtAppMetadata: Sendable {
 
 @MainActor
 public class SwtApp {
-    static let shared: SwtApp?
+    static var shared: SwtApp?
     private var mainWidgets: [SwtWidget] = []
-
-    enum SwtAppError: Error {
-        case InitializationFailed(String)
-    }
     
     internal init() {}
 
@@ -45,13 +41,13 @@ public class SwtApp {
         if shared == nil {
             // Initialise SDL
             if SDL_InitSubSystem(SDL_InitFlags(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) == false {
-                throw SwtAppError.FailedToInitialise("Couldn't initialise App: \(String(cString: SDL_GetError()))")
+                throw SwtAppError.FailedToInitialize("Couldn't initialise App: \(String(cString: SDL_GetError()))")
             }
             shared = SwtApp()
             shared?.setMetadata(SwtAppMetadata.default)
         }
         guard let sharedApp = shared else {
-            throw SwtAppError.FailedToInitialise("Shared instance is nil")
+            throw SwtAppError.FailedToInitialize("Shared instance is nil")
         }
         return sharedApp
     }
