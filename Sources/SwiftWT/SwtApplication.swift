@@ -32,8 +32,12 @@ public struct SwtAppMetadata: Sendable {
 
 @MainActor
 public class SwtApp {
-    private static var shared: SwtApp?
+    static let shared: SwtApp?
     private var mainWidgets: [SwtWidget] = []
+
+    enum SwtAppError: Error {
+        case InitializationFailed(String)
+    }
     
     internal init() {}
 
