@@ -46,7 +46,8 @@ public class SwtApplication {
         }
         
         // Create window and renderer in one call.
-        if SDL_CreateWindowAndRenderer("examples/renderer/lines", 640, 480, 0, &window, &renderer) == false {
+    
+        if SDL_CreateWindowAndRenderer("examples/renderer/lines", 640, 480, 0x0000000000000010, &window, &renderer) == false {
             Print("Couldn't create window/renderer: \(String(cString: SDL_GetError()))", asError: true)
             return SDL_APP_FAILURE
         }

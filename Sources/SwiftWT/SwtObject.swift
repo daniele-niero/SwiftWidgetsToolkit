@@ -1,34 +1,60 @@
-// An object that caan hold parent child relationships like Qt's QObject
 
+/// A class representing an object in the Swift Widget Toolkit (SWT) hierarchy.
+/// Each `SwtObject` can have a parent and multiple children, forming a tree structure.
 public class SwtObject {
-    private weak var parent: SwtObject?
-    private var children: [SwtObject] = []
+
+    /// The parent of this object. It is a weak reference to avoid retain cycles.
+    private weak var _parent: SwtObject?
     
+    /// The children of this object.
+    private var _children: [SwtObject] = []
+    
+    /// Initializes a new `SwtObject` with an optional parent.
+    /// - Parameter: parent: The parent of this object. 
+    ///                      If provided, this object will be added to the parent's children.
     public init(parent: SwtObject? = nil) {
         if (parent != nil) {
-            parent!.addChild(self)
+            self.parent = parent
         }
     }
+
+    public var parent : SwtObject? {
+        get {
+            return _parent
+        }
+        set {
+            guard _parent !== newValue else { return }
+            if _parent != nil {
+                _parent!.removeChild(self)
+            }
+            if newValue != nil {
+                newValue!.addChild(self)
+            }
+            _parent = newValue
+        }
+    }
+
+    public var children: [SwtObject] {
+        return _children
+    }
     
+
+    /// Adds a child to this object.
+    /// Note: This function doesn't add the parent to the child's parent property.
+    ///       Being a private function, it is only called when the parent is already set or being set.
+    ///       This avoids loops twhere the parent is set on the child and the child is set on the parent.
+    /// - Parameter child: The child to be added.
     private func addChild(_ child: SwtObject) {
-        if children.contains(where: { $0 === child }) {
+        if _children.contains(where: { $0 === child }) {
             return
         }
-        children.append(child)
-        child.parent = self
+        _children.append(child)
     }
     
+    /// Removes a child from this object.
+    /// - Parameter child: The child to be removed.
     public func removeChild(_ child: SwtObject) {
-        children.removeAll { $0 === child }
-        child.parent = nil
-    }
-    
-    public func removeAllChildren() {
-        children.forEach { $0.parent = nil }
-        children.removeAll()
-    }
-    
-    public func removeFromParent() {
-        parent?.removeChild(self)
+        _children.removeAll { $0 === child }
+        child._parent = nil
     }
 }

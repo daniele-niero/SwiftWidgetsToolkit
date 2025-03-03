@@ -6,8 +6,12 @@
   changed on existing windows by the app, and some of it might be altered by
   the user or system outside of the app's control.
  */
-struct WindowFlags: OptionSet {
-    let rawValue: UInt64
+public struct WindowFlags: OptionSet, Sendable {
+    public let rawValue: UInt64
+
+    public init(rawValue: UInt64) {
+        self.rawValue = rawValue
+    }
 
     /// window is in fullscreen mode
     static let fullscreen           = WindowFlags(rawValue: 0x0000000000000001)    
@@ -59,4 +63,5 @@ struct WindowFlags: OptionSet {
     static let transparent          = WindowFlags(rawValue: 0x0000000040000000)    
     /// window should not be focusable
     static let notFocusable         = WindowFlags(rawValue: 0x0000000080000000)    
+
 }

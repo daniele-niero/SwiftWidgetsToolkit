@@ -2,54 +2,67 @@ import Testing
 @testable import SwiftWT
 import Foundation
 
+@MainActor
+@Suite
+class SwtAppTests {
+    var app: SwtApp?
+    var initError: Error?
 
+    init() {
+        do {
+            app = try SwtApp.get()
+        } catch {
+            // test fails if app initialization fails
+            initError = error
+            app = nil
+        }
+    }
 
-@Test func testAppMetadata() async {
-    let app: SwtApp
-    do {
-        app = try await SwtApp.get()
-    } catch {
-        print("Error: \(error)")
-        return
+    @Test("SwtApp initialization")
+    func testAppInitialization() {
+        guard app != nil else {
+            Issue.record("App initialization failed: \(initError!)")
+            return // Or call an explicit failure function if available
+        }
     }
-    
-    let metadata = SwtAppMetadata(name: "Test App", version: "1.0", identifier: "com.test.app")
-    await app.setMetadata(metadata)
-    let appMetadata = await app.getMetadata()
-    
-    #expect(appMetadata != nil)
-    if let appMetadata = appMetadata {
-        #expect(appMetadata.name == "Test App")
-        #expect(appMetadata.version == "1.0")
-        #expect(appMetadata.identifier == "com.test.app")
-    }
-}
 
-// Test SwtApp initialization
-@Test func testAppInitialization() async {
-    let app: SwtApp
-    do {
-        app = try await SwtApp.get()
-    } catch {
-        // test fails if app initialization fails
-        Issue.record("Error: \(error)")
-        return
-    }
-    
-    let metadata = await app.getMetadata()
-    #expect(metadata != nil)
-}
+    @Test("SwtApp singleton nature") 
+    func testAppSingleton() {
+        guard app != nil else {
+            Issue.record("App initialization failed: \(initError!)")
+            return
+        }
 
-// Test SwtApp singleton nature
-@Test func testAppSingleton() async {
-    let app1: SwtApp
-    let app2: SwtApp
-    do {
-        app1 = try await SwtApp.get()
-        app2 = try await SwtApp.get()
-    } catch {
-        Issue.record("Error: \(error)")
-        return
+        let app1: SwtApp
+        let app2: SwtApp
+        do {
+            app1 = try SwtApp.get()
+            app2 = try SwtApp.get()
+        } catch {
+            Issue.record("Error: \(error)")
+            return
+        }
+        #expect(app1 === app)
+        #expect(app2 === app)
+        #expect(app1 === app2)  
     }
-    #expect(app1 === app2)
+
+    @Test("Get and set app metadata")
+    func testAppMetadata() {
+        guard let app = app else {
+            Issue.record("App initialization failed: \(initError!)")
+            return
+        }
+
+        app.setMetadata(name: "Test App", version: "1.0", identifier: "com.test.app")
+
+        #expect(app.getMetadataProperty(.name) == "Test App")
+        #expect(app.getMetadataProperty(.version) == "1.0")
+        #expect(app.getMetadataProperty(.identifier) == "com.test.app")
+
+        #expect(app.getMetadataProperty(.creator) == nil)
+        #expect(app.getMetadataProperty(.copyright) == nil)
+        #expect(app.getMetadataProperty(.url) == nil)
+        #expect(app.getMetadataProperty(.type) == "application")
+    }
 }
