@@ -55,7 +55,7 @@ let package = Package(
         ),
         .executableTarget(
             name: "WidgetsExample",
-            dependencies: ["CSDL3"],
+            dependencies: ["SwiftWT"],
             cSettings: windowsCSettings,
             linkerSettings: windowsLinkerSettings
         )

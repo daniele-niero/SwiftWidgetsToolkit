@@ -23,6 +23,7 @@ public enum EAppMetadataProperties: String {
 public class SwtApp {
     static var shared: SwtApp?
     internal var mainWidgets: [SwtCoreWindow] = []
+    private var running = false
     
     internal init() {}
 
@@ -79,7 +80,39 @@ public class SwtApp {
     }
 
     public func run() -> Int32 {
-        return 1
-        // SDL_CreateSoftwareRenderer(UnsafeMutablePointer<SDL_Surface>!)
+        running = true
+        var event = SDL_Event()
+        
+        while running {
+            // Poll events (non-blocking or with a timeout as needed)
+            while SDL_PollEvent(&event) {
+                if event.type == SDL_EVENT_QUIT.rawValue {
+                    running = false
+                }
+                // You can add additional event processing here.
+            }
+            
+            // Update and render your widgets here.
+            // For example, clear the screen and draw a rectangle:
+            // if let ren = renderer {
+            //     SDL_SetRenderDrawColor(ren, 0, 0, 0, 255)
+            //     SDL_RenderClear(ren)
+                
+            //     var rect = SDL_Rect(x: 100, y: 100, w: 200, h: 150)
+            //     SDL_SetRenderDrawColor(ren, 255, 0, 0, 255)
+            //     SDL_RenderFillRect(ren, &rect)
+                
+            //     SDL_RenderPresent(ren)
+            // }
+            // Insert a delay if necessary (e.g. for frame limiting)
+            SDL_Delay(100)
+        }
+        
+        // Cleanup happens in deinit.
+        return 0
+    }
+    
+    public func quit() {
+        running = false
     }
 }
