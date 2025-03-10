@@ -18,10 +18,16 @@ public enum EAppMetadataProperties: String {
     case type         = "SDL.app.metadata.type"
 }
 
+public enum EAppResut: Int32 {
+    case  success   = 0
+    case  failure   = 1
+    case `continue` = 2
+}
+
 
 @MainActor
 public class SwtApp {
-    static var shared: SwtApp?
+    private static var shared: SwtApp?
     internal var mainWidgets: [SwtCoreWindow] = []
     private var running = false
     
@@ -34,18 +40,16 @@ public class SwtApp {
     }
 
     public static func get() throws -> SwtApp {
-        if shared == nil {
+        guard let shared = shared else {
             // Initialise SDL
             if SDL_InitSubSystem(SDL_InitFlags(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) == false {
                 throw SwtAppError.FailedToInitialize("Couldn't initialise App: \(String(cString: SDL_GetError()))")
             }
             shared = SwtApp()
             shared?.setMetadata()
+            return shared!
         }
-        guard let sharedApp = shared else {
-            throw SwtAppError.FailedToInitialize("Shared instance is nil")
-        }
-        return sharedApp
+        return shared
     }
 
     public func setMetadata(name: String       = "SwtWidget App", 
@@ -79,18 +83,22 @@ public class SwtApp {
         }
     }
 
-    public func run() -> Int32 {
+    public func run() -> EAppResut {
         running = true
         var event = SDL_Event()
-        
+        var counter = 0
         while running {
             // Poll events (non-blocking or with a timeout as needed)
             while SDL_PollEvent(&event) {
                 if event.type == SDL_EVENT_QUIT.rawValue {
-                    running = false
+                    quit()
                 }
+                print("Loop \(counter)")
+                counter += 1
                 // You can add additional event processing here.
             }
+            // Insert a delay if necessary (e.g. for frame limiting)
+            SDL_Delay(16)
             
             // Update and render your widgets here.
             // For example, clear the screen and draw a rectangle:
@@ -104,12 +112,10 @@ public class SwtApp {
                 
             //     SDL_RenderPresent(ren)
             // }
-            // Insert a delay if necessary (e.g. for frame limiting)
-            SDL_Delay(100)
         }
         
         // Cleanup happens in deinit.
-        return 0
+        return EAppResut.success
     }
     
     public func quit() {

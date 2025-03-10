@@ -1,16 +1,17 @@
 import SwiftWT
 
-
-
-print("Starting Prova...")
-
-do {
-    let app = try SwtApp.get()
+@MainActor
+func main() {
+    guard let app = try? SwtApp.get() else {
+        print("Failed to initialize SwtApp")
+        return
+    }
     let _ = SwtCoreWindow("Nice Test!")
     let _ = app.run()
-} catch {
-    print("An error occurred: \(error)")
 }
+
+main()
+
 print("Prova execution completed with code")
 
 

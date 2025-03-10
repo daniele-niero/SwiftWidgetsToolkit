@@ -42,7 +42,7 @@ public class SwtCoreWindow {
     ///   - flags: SDL window flags (default is 0).
     ///   - parent: The title of the window.
     public init(_ title: String, x: Int32 = 640, y: Int32 = 480, flags: WindowFlags? = nil) {
-        let flags = flags ?? WindowFlags()
+        let flags = flags ?? [.resizable]
 
         var cWindowPtr: OpaquePointer?
         var cRendererPtr: OpaquePointer?
@@ -62,5 +62,14 @@ public class SwtCoreWindow {
         // Wrap the pointers in SDLResource, providing the appropriate destroy functions.
         windowResource = SDLResource(pointer: validWindowPtr, destroy: SDL_DestroyWindow)
         rendererResource = SDLResource(pointer: validRendererPtr, destroy: SDL_DestroyRenderer)
+
+        do {
+            let app = try await SwtApp.get()
+            // Register itself with the app.
+            await app.mainWidgets.append(self)
+        } catch {
+            print("Failed to get app: \(error)", asError: true)
+            return
+        }
     }
 }
