@@ -3,6 +3,7 @@ import Testing
 
 // MARK: - Test Suite
 
+@MainActor
 @Suite("SwtObject Parent-Child Relationships")
 struct SwtObjectTests {
     
@@ -10,12 +11,12 @@ struct SwtObjectTests {
     
     /// Tests that initialization with a parent correctly adds the child.
     @Test("Initializer with parent adds child to parent")
-    func initWithParentAddsChild() {
-        let parent = SwtObject()
-        let child = SwtObject(parent: parent)
+    func initWithParentAddsChild() async {
+        let parent =  SwtObject()
+        let child =  SwtObject(parent: parent)
         
-        #expect(parent.children.contains { $0 === child }) // Verify child is added
-        #expect(child.parent === parent) // Verify parent is set
+         #expect(parent.children.contains { $0 === child }) // Verify child is added
+         #expect(child.parent === parent) // Verify parent is set
     }
     
     /// Tests initialization without a parent.
@@ -83,12 +84,3 @@ struct SwtObjectTests {
         #expect(child.parent == nil)
     }
 }
-
-// MARK: - Notes for Test Setup
-
-/// 1. **Access Control**: Use `@testable import YourModule` to access private members (`_children`, `_parent`).
-/// 2. **Retain Cycles**: The `weak` reference to `_parent` prevents cycles, but test cleanup is automatic.
-/// 3. **Edge Cases**: Additional tests could cover:
-///    - Removing non-existent children
-///    - Stress tests with deep hierarchies
-///    - Thread safety (if applicable)

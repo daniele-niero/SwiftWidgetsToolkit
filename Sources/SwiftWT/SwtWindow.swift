@@ -1,19 +1,19 @@
-import SDL3
 
+import SDL3
 
 internal final class SDLResource: @unchecked Sendable {
     private var pointer: OpaquePointer?
     private let destroyClosure: (OpaquePointer) -> Void
 
+    /// Accessor to get the underlying pointer.
+    var rawPointer: OpaquePointer? {
+        return pointer
+    }
+    
     /// Initializes the resource wrapper with a C pointer and its corresponding destroy function.
     init(pointer: OpaquePointer, destroy: @escaping (OpaquePointer) -> Void) {
         self.pointer = pointer
         self.destroyClosure = destroy
-    }
-    
-    /// Accessor to get the underlying pointer.
-    var rawPointer: OpaquePointer? {
-        return pointer
     }
     
     /// Manually destroy the resource if needed.
@@ -29,21 +29,50 @@ internal final class SDLResource: @unchecked Sendable {
     }
 }
 
+public struct SwtSize {
+    public var width: Int32
+    public var height: Int32
+}
 
-/// A Swift class to manage an SDL3 window.
 @MainActor
-public class SwtCoreWindow {
+public class SwtWindow: SwtObject {
     // Local variables to receive the window and renderer pointers.
     private var windowResource: SDLResource?
     private var rendererResource: SDLResource?
+
+    public override var parent : SwtObject? {
+        get {
+            return nil
+        }
+        set {
+        }
+    }
+
+    public var title: String {
+        get {
+            return String(cString: SDL_GetWindowTitle(windowResource?.rawPointer))
+        }
+        set {
+            SDL_SetWindowTitle(windowResource?.rawPointer, newValue)
+        }
+    }
+
+    public var size: SwtSize {
+        get {
+            var size = SwtSize(width: 0, height: 0)
+            SDL_GetWindowSize(windowResource?.rawPointer, &size.width, &size.height)
+            return size
+        }
+        set {
+            SDL_SetWindowSize(windowResource?.rawPointer, newValue.width, newValue.height)
+        }
+    }
 
     /// Creates a new SDL3 window.
     /// - Parameters:
     ///   - flags: SDL window flags (default is 0).
     ///   - parent: The title of the window.
-    public init(_ title: String, x: Int32 = 640, y: Int32 = 480, flags: WindowFlags? = nil) {
-        let flags = flags ?? [.resizable]
-
+    private func createSdlWindowAndRenderer(_ title: String, x: Int32, y: Int32, flags: WindowFlags) {
         var cWindowPtr: OpaquePointer?
         var cRendererPtr: OpaquePointer?
 
@@ -62,14 +91,34 @@ public class SwtCoreWindow {
         // Wrap the pointers in SDLResource, providing the appropriate destroy functions.
         windowResource = SDLResource(pointer: validWindowPtr, destroy: SDL_DestroyWindow)
         rendererResource = SDLResource(pointer: validRendererPtr, destroy: SDL_DestroyRenderer)
+    }
+
+
+    public init(_ title: String, flags: WindowFlags? = nil) {
+        let flags = flags ?? [.resizable]
+        super.init()
+
+        createSdlWindowAndRenderer(title, x: 640, y: 480, flags: flags)
+
 
         do {
-            let app = try await SwtApp.get()
+            let app = try SwtApp.get()
             // Register itself with the app.
-            await app.mainWidgets.append(self)
+            app.mainWidgets.append(self)
         } catch {
             print("Failed to get app: \(error)", asError: true)
             return
         }
     }
+
+    deinit {
+    //     do {
+    //         let app = try SwtApp.get()
+    //         // Unregister itself from the app.
+    //         app.mainWidgets.removeAll { $0 === self }
+    //     } catch {
+    //         print("Failed to get app: \(error)", asError: true)
+    //     }
+    }
+
 }

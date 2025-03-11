@@ -1,18 +1,21 @@
 import SwiftWT
 
 @MainActor
-func main() {
+func main() -> EAppResult{
     guard let app = try? SwtApp.get() else {
         print("Failed to initialize SwtApp")
-        return
+        return EAppResult.failure
     }
-    let _ = SwtCoreWindow("Nice Test!")
-    let _ = app.run()
+    let widget = SwtWidget()
+    widget.show()
+    let window = widget.parent as! SwtWindow
+    print(window.size)
+    return app.run()
 }
 
-main()
+let result: EAppResult = main()
 
-print("Prova execution completed with code")
+print("Prova execution completed with code \(result)")
 
 
 

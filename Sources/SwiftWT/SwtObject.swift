@@ -1,13 +1,14 @@
 
 /// A class representing an object in the Swift Widget Toolkit (SWT) hierarchy.
 /// Each `SwtObject` can have a parent and multiple children, forming a tree structure.
+@MainActor
 public class SwtObject {
 
     /// The parent of this object. It is a weak reference to avoid retain cycles.
-    private weak var _parent: SwtObject?
+    internal weak var _parent: SwtObject?
     
     /// The children of this object.
-    private var _children: [SwtObject] = []
+    internal var _children: [SwtObject] = []
     
     /// Initializes a new `SwtObject` with an optional parent.
     /// - Parameter: parent: The parent of this object. 

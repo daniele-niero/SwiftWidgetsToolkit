@@ -18,7 +18,7 @@ public enum EAppMetadataProperties: String {
     case type         = "SDL.app.metadata.type"
 }
 
-public enum EAppResut: Int32 {
+public enum EAppResult: Int32 {
     case  success   = 0
     case  failure   = 1
     case `continue` = 2
@@ -28,7 +28,7 @@ public enum EAppResut: Int32 {
 @MainActor
 public class SwtApp {
     private static var shared: SwtApp?
-    internal var mainWidgets: [SwtCoreWindow] = []
+    internal var mainWidgets: [SwtWindow] = []
     private var running = false
     
     internal init() {}
@@ -83,7 +83,7 @@ public class SwtApp {
         }
     }
 
-    public func run() -> EAppResut {
+    public func run() -> EAppResult {
         running = true
         var event = SDL_Event()
         var counter = 0
@@ -93,29 +93,21 @@ public class SwtApp {
                 if event.type == SDL_EVENT_QUIT.rawValue {
                     quit()
                 }
+                else if event.type == SDL_EVENT_RENDER_TARGETS_RESET.rawValue {
+                    // Handle render device reset event
+                    print("Render device reset occurred")
+                }
                 print("Loop \(counter)")
                 counter += 1
+d
                 // You can add additional event processing here.
             }
             // Insert a delay if necessary (e.g. for frame limiting)
             SDL_Delay(16)
-            
-            // Update and render your widgets here.
-            // For example, clear the screen and draw a rectangle:
-            // if let ren = renderer {
-            //     SDL_SetRenderDrawColor(ren, 0, 0, 0, 255)
-            //     SDL_RenderClear(ren)
-                
-            //     var rect = SDL_Rect(x: 100, y: 100, w: 200, h: 150)
-            //     SDL_SetRenderDrawColor(ren, 255, 0, 0, 255)
-            //     SDL_RenderFillRect(ren, &rect)
-                
-            //     SDL_RenderPresent(ren)
-            // }
         }
         
         // Cleanup happens in deinit.
-        return EAppResut.success
+        return EAppResult.success
     }
     
     public func quit() {

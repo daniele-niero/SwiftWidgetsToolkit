@@ -1,12 +1,16 @@
+import Foundation
 
-
+@MainActor
 public class SwtWidget: SwtObject {
-    public override init(parent: SwtObject? = nil) {
-        super.init(parent: parent) 
-
+    public func show() {
         if parent == nil {
             // we need a window to host the widget
-            let _ = SwtCoreWindow("Nice Test!")
+            let window = SwtWindow("SwiftWT Widget")
+            parent = window
         }
+    }
+
+    public func hide() {
+        
     }
 }
