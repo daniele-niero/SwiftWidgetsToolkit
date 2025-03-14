@@ -35,7 +35,7 @@ public struct SwtSize {
 }
 
 @MainActor
-public class SwtWindow: SwtObject {
+public class SwtWindow: SwtEventReceiver, SwtObject {
     // Local variables to receive the window and renderer pointers.
     private var windowResource: SDLResource?
     private var rendererResource: SDLResource?
@@ -100,14 +100,37 @@ public class SwtWindow: SwtObject {
 
         createSdlWindowAndRenderer(title, x: 640, y: 480, flags: flags)
 
-
         do {
             let app = try SwtApp.get()
             // Register itself with the app.
-            app.mainWidgets.append(self)
+            app.mainWindows.append(self)
         } catch {
             print("Failed to get app: \(error)", asError: true)
             return
+        }
+    }
+
+    public fun event(_ event: SDL_Event) -> Bool {
+        return
+    }
+
+    public func paint() {
+        guard let renderer = rendererResource?.rawPointer else {
+            print("Renderer is nil", asError: true)
+            return
+        }
+
+        // Set the draw color to white.
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255)
+        // Clear the window with the draw color.
+        SDL_RenderClear(renderer)
+        // Present the renderer.
+        SDL_RenderPresent(renderer)
+
+        let painter = SwtPainter()
+
+        for child in children {
+            (child as? SwtPaintable)?.paint(painter: painter)
         }
     }
 

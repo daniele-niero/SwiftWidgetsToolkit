@@ -25,10 +25,16 @@ public enum EAppResult: Int32 {
 }
 
 
+public protocol SwtEventReceiver {
+    /// Process an event. Return true if the event is handled.
+    func event(_ event: SDL_Event) -> Bool
+}
+
+
 @MainActor
 public class SwtApp {
     private static var shared: SwtApp?
-    internal var mainWidgets: [SwtWindow] = []
+    internal var mainWindows: [SwtWindow] = []
     private var running = false
     
     internal init() {}
@@ -86,21 +92,41 @@ public class SwtApp {
     public func run() -> EAppResult {
         running = true
         var event = SDL_Event()
-        var counter = 0
         while running {
             // Poll events (non-blocking or with a timeout as needed)
             while SDL_PollEvent(&event) {
-                if event.type == SDL_EVENT_QUIT.rawValue {
-                    quit()
-                }
-                else if event.type == SDL_EVENT_RENDER_TARGETS_RESET.rawValue {
+                switch SDL_EventType(Int32(event.type)) {
+
+                case SDL_EVENT_WINDOW_RESIZED,
+                     SDL_EVENT_WINDOW_EXPOSED,
+                     SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
                     // Handle render device reset event
-                    print("Render device reset occurred")
+                    for window in mainWindows {
+                        window.paint()
+                    }
+
+                case SDL_EVENT_KEY_DOWN:
+                    let keySym = event.key.key
+                    if keySym == SDLK_ESCAPE {
+                        quit()
+                    } else {
+                        print("Key pressed: \(keySym)")
+                    }
+                
+                case SDL_EVENT_MOUSE_MOTION:
+                    let motion = event.motion
+                    print("Mouse moved to: (\(motion.x), \(motion.y))")
+
+                case SDL_EVENT_QUIT:
+                    quit()
+                
+                default:
+                    break
                 }
-                print("Loop \(counter)")
-                counter += 1
-d
-                // You can add additional event processing here.
+
+                if RepaintEvents.contains(Int32(event.type)) {
+                    
+                }
             }
             // Insert a delay if necessary (e.g. for frame limiting)
             SDL_Delay(16)
