@@ -25,10 +25,10 @@ public enum EAppResult: Int32 {
 }
 
 
-// @MainActor
+@MainActor
 public protocol SwtEventReceiver {
     /// Process an event. Return true if the event is handled.
-    func event(_ event: SDL_Event) -> Bool
+    func event(_ event: SwtEvent) -> Bool
 }
 
 
@@ -96,12 +96,14 @@ public class SwtApp {
         while running {
             // Poll events (non-blocking or with a timeout as needed)
             while SDL_PollEvent(&event) {
-                if event.type == SDL_EVENT_QUIT.rawValue:
+                if event.type == SDL_EVENT_QUIT.rawValue {
                     quit()
+                }
 
                 for window in mainWindows {
-                    if window.event(event)
-                }                
+                    // TODO: maybe, process only the window with Focus
+                    _ = window.event(SwtEvent(event))
+                }
             }
             // Insert a delay if necessary (e.g. for frame limiting)
             SDL_Delay(16)

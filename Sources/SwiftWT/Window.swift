@@ -35,7 +35,7 @@ public struct SwtSize {
 }
 
 @MainActor
-public class SwtWindow: SwtEventReceiver, SwtObject {
+public class SwtWindow: SwtObject, SwtEventReceiver {
     // Local variables to receive the window and renderer pointers.
     private var windowResource: SDLResource?
     private var rendererResource: SDLResource?
@@ -110,22 +110,25 @@ public class SwtWindow: SwtEventReceiver, SwtObject {
         }
     }
 
-    @MainActor public func event(_ event: SDL_Event) -> Bool {
-        switch SDL_EventType(Int32(event.type)) {
-            case SDL_EVENT_WINDOW_RESIZED,
-                 SDL_EVENT_WINDOW_EXPOSED,
-                 SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
-                // Handle render device reset event
-                for child in children {
-                    // if child conform to the SwtEventReceiver protocol
-                    // then call the event method
-                    guard let child = child as? SwtEventReceiver else {
-                        continue
-                    }
-                    if child.event(event) {
-                        return true
-                    }
-                }
+    public func event(_ event: SwtEvent) -> Bool {
+        switch event {
+            case .keyPressed(let keyEvent), .keyReleased(let keyEvent):
+                print("Event: \(keyEvent)")
+                print("key:   \(keyEvent.key)")
+            // case SDL_EVENT_WINDOW_RESIZED,
+            //      SDL_EVENT_WINDOW_EXPOSED,
+            //      SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+            //     // Handle render device reset event
+            //     for child in children {
+            //         // if child conform to the SwtEventReceiver protocol
+            //         // then call the event method
+            //         guard let child = child as? SwtEventReceiver else {
+            //             continue
+            //         }
+            //         if child.event(event) {
+            //             return true
+            //         }
+            //     }
 
             // case SDL_EVENT_KEY_DOWN:
             //     let keySym = event.key.key
