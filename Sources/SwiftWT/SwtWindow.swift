@@ -110,8 +110,39 @@ public class SwtWindow: SwtEventReceiver, SwtObject {
         }
     }
 
-    public fun event(_ event: SDL_Event) -> Bool {
-        return
+    @MainActor public func event(_ event: SDL_Event) -> Bool {
+        switch SDL_EventType(Int32(event.type)) {
+            case SDL_EVENT_WINDOW_RESIZED,
+                 SDL_EVENT_WINDOW_EXPOSED,
+                 SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+                // Handle render device reset event
+                for child in children {
+                    // if child conform to the SwtEventReceiver protocol
+                    // then call the event method
+                    guard let child = child as? SwtEventReceiver else {
+                        continue
+                    }
+                    if child.event(event) {
+                        return true
+                    }
+                }
+
+            // case SDL_EVENT_KEY_DOWN:
+            //     let keySym = event.key.key
+            //     if keySym == SDLK_ESCAPE {
+            //        // close and clean up this window
+            //     } else {
+            //         print("Key pressed: \(keySym)")
+            //     }
+            
+            // case SDL_EVENT_MOUSE_MOTION:
+            //     let motion = event.motion
+            //     print("Mouse moved to: (\(motion.x), \(motion.y))")
+            
+            default:
+                break
+        }
+        return false
     }
 
     public func paint() {

@@ -25,6 +25,7 @@ public enum EAppResult: Int32 {
 }
 
 
+// @MainActor
 public protocol SwtEventReceiver {
     /// Process an event. Return true if the event is handled.
     func event(_ event: SDL_Event) -> Bool
@@ -95,38 +96,12 @@ public class SwtApp {
         while running {
             // Poll events (non-blocking or with a timeout as needed)
             while SDL_PollEvent(&event) {
-                switch SDL_EventType(Int32(event.type)) {
-
-                case SDL_EVENT_WINDOW_RESIZED,
-                     SDL_EVENT_WINDOW_EXPOSED,
-                     SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
-                    // Handle render device reset event
-                    for window in mainWindows {
-                        window.paint()
-                    }
-
-                case SDL_EVENT_KEY_DOWN:
-                    let keySym = event.key.key
-                    if keySym == SDLK_ESCAPE {
-                        quit()
-                    } else {
-                        print("Key pressed: \(keySym)")
-                    }
-                
-                case SDL_EVENT_MOUSE_MOTION:
-                    let motion = event.motion
-                    print("Mouse moved to: (\(motion.x), \(motion.y))")
-
-                case SDL_EVENT_QUIT:
+                if event.type == SDL_EVENT_QUIT.rawValue:
                     quit()
-                
-                default:
-                    break
-                }
 
-                if RepaintEvents.contains(Int32(event.type)) {
-                    
-                }
+                for window in mainWindows {
+                    if window.event(event)
+                }                
             }
             // Insert a delay if necessary (e.g. for frame limiting)
             SDL_Delay(16)
