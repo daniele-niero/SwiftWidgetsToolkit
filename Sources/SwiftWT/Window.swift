@@ -39,13 +39,12 @@ public class SwtWindow: SwtObject, SwtEventReceiver {
     // Local variables to receive the window and renderer pointers.
     private var windowResource: SDLResource?
     private var rendererResource: SDLResource?
+    internal var _windowId: UInt32
+    public private(set) var active: Bool = false
 
     public override var parent : SwtObject? {
-        get {
-            return nil
-        }
-        set {
-        }
+        get { return nil }
+        set {}
     }
 
     public var title: String {
@@ -65,6 +64,28 @@ public class SwtWindow: SwtObject, SwtEventReceiver {
         }
         set {
             SDL_SetWindowSize(windowResource?.rawPointer, newValue.width, newValue.height)
+        }
+    }
+
+    public var windowID: UInt32 {
+        return SDL_GetWindowID(windowResource?.rawPointer)
+    }
+
+    public init(_ title: String, flags: WindowFlags? = nil) {
+        let flags = flags ?? [.resizable]
+        _windowId = 0
+        super.init()
+        
+        createSdlWindowAndRenderer(title, x: 640, y: 480, flags: flags)
+        _windowId = SDL_GetWindowID(windowResource?.rawPointer)
+
+        do {
+            let app = try SwtApp.get()
+            // Register itself with the app.
+            app.mainWindows.append(self)
+        } catch {
+            print("Failed to get app: \(error)", asError: true)
+            return
         }
     }
 
@@ -91,61 +112,6 @@ public class SwtWindow: SwtObject, SwtEventReceiver {
         // Wrap the pointers in SDLResource, providing the appropriate destroy functions.
         windowResource = SDLResource(pointer: validWindowPtr, destroy: SDL_DestroyWindow)
         rendererResource = SDLResource(pointer: validRendererPtr, destroy: SDL_DestroyRenderer)
-    }
-
-
-    public init(_ title: String, flags: WindowFlags? = nil) {
-        let flags = flags ?? [.resizable]
-        super.init()
-
-        createSdlWindowAndRenderer(title, x: 640, y: 480, flags: flags)
-
-        do {
-            let app = try SwtApp.get()
-            // Register itself with the app.
-            app.mainWindows.append(self)
-        } catch {
-            print("Failed to get app: \(error)", asError: true)
-            return
-        }
-    }
-
-    public func event(_ event: SwtEvent) -> Bool {
-        switch event {
-            case .keyPressed(let keyEvent), .keyReleased(let keyEvent):
-                print("Event: \(keyEvent)")
-                print("key:   \(keyEvent.key)")
-            // case SDL_EVENT_WINDOW_RESIZED,
-            //      SDL_EVENT_WINDOW_EXPOSED,
-            //      SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
-            //     // Handle render device reset event
-            //     for child in children {
-            //         // if child conform to the SwtEventReceiver protocol
-            //         // then call the event method
-            //         guard let child = child as? SwtEventReceiver else {
-            //             continue
-            //         }
-            //         if child.event(event) {
-            //             return true
-            //         }
-            //     }
-
-            // case SDL_EVENT_KEY_DOWN:
-            //     let keySym = event.key.key
-            //     if keySym == SDLK_ESCAPE {
-            //        // close and clean up this window
-            //     } else {
-            //         print("Key pressed: \(keySym)")
-            //     }
-            
-            // case SDL_EVENT_MOUSE_MOTION:
-            //     let motion = event.motion
-            //     print("Mouse moved to: (\(motion.x), \(motion.y))")
-            
-            default:
-                break
-        }
-        return false
     }
 
     public func paint() {
@@ -176,6 +142,16 @@ public class SwtWindow: SwtObject, SwtEventReceiver {
     //     } catch {
     //         print("Failed to get app: \(error)", asError: true)
     //     }
+    }
+
+    public func focusGainedEvent(_ event: SwtFocusEvent) { 
+        active = true
+        print("event gained, active: \(active)")
+    }
+
+    public func focusLostEvent(_ event: SwtFocusEvent) {
+        active = false
+        print("event lost: active: \(active)")
     }
 
 }

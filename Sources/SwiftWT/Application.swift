@@ -26,16 +26,10 @@ public enum EAppResult: Int32 {
 
 
 @MainActor
-public protocol SwtEventReceiver {
-    /// Process an event. Return true if the event is handled.
-    func event(_ event: SwtEvent) -> Bool
-}
-
-
-@MainActor
 public class SwtApp {
     private static var shared: SwtApp?
     internal var mainWindows: [SwtWindow] = []
+    internal var allEventReceivers: [WeakEventReceiver] = []
     private var running = false
     
     internal init() {}
@@ -92,17 +86,50 @@ public class SwtApp {
 
     public func run() -> EAppResult {
         running = true
-        var event = SDL_Event()
+        var sdlEvent = SDL_Event()
         while running {
-            // Poll events (non-blocking or with a timeout as needed)
-            while SDL_PollEvent(&event) {
-                if event.type == SDL_EVENT_QUIT.rawValue {
-                    quit()
-                }
+            while SDL_PollEvent(&sdlEvent) {
+                // // wrap the underling SDL's event into a Swt's event
+                // let swtEvent = SwtEvent(sdlEvent)
+                // switch swtEvent {
+                //     case .quit:
+                //         quit()
+                //         break
+                //     case .focusGained(let event), .focusLost(let event):
+                //         for window in mainWindows {
+                //             if window.windowID == event.windowID {
+                //                 window.dispatchEvent(event)
+                //             }
+                //         }
+                //     default:
+                //         continue  // TODO: Handle this better
+                // }
 
-                for window in mainWindows {
-                    // TODO: maybe, process only the window with Focus
-                    _ = window.event(SwtEvent(event))
+                // Poll events (non-blocking or with a timeout as needed)
+
+                let sdlEventType = SDL_EventType(Int32(sdlEvent.type))
+                switch sdlEventType {
+
+                    case SDL_EVENT_QUIT:
+                        quit()
+                        break
+                        
+                    case SDL_EVENT_WINDOW_FOCUS_GAINED:
+                        for window in mainWindows {
+                            if window.windowID == sdlEvent.window.windowID {
+                                sendEvent(SwtEvent(sdlEvent), to: window)
+                            } 
+                        }
+
+                    case SDL_EVENT_WINDOW_FOCUS_LOST:
+                        for window in mainWindows {
+                            if window.windowID == sdlEvent.window.windowID {
+                                sendEvent(SwtEvent(sdlEvent), to: window)
+                            } 
+                        }
+
+                    default:
+                        continue
                 }
             }
             // Insert a delay if necessary (e.g. for frame limiting)

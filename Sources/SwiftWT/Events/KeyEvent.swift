@@ -1,15 +1,15 @@
 import SDL3
 
-/// A Swift struct representing key events.
-public struct SwtKeyEvent: CustomStringConvertible, CustomDebugStringConvertible {
-    private let event: SDL_KeyboardEvent
+/// A Swift class representing key events.
+public class SwtKeyEvent: SwtEventBase {
+    private let sdl_event: SDL_KeyboardEvent
 
     init(event: SDL_KeyboardEvent) {
-        self.event = event
+        self.sdl_event = event
     }
     
     var key: SwtKeyCode {
-        if let wrapped = SwtKeyCode(event.key) {
+        if let wrapped = SwtKeyCode(sdl_event.key) {
             return wrapped
         } else {
             return SwtKeyCode.unknown
@@ -17,26 +17,16 @@ public struct SwtKeyEvent: CustomStringConvertible, CustomDebugStringConvertible
     }
 
     var modifier: SwtKeyModifier {
-        if let wrapped = SwtKeyModifier(event.mod) {
+        if let wrapped = SwtKeyModifier(sdl_event.mod) {
             return wrapped
         } else {
             return SwtKeyModifier.none
         }
     }
 
-    var pressed:  Bool { return event.down }
-    var released: Bool { return !event.down }
-    var repeated: Bool { return event.repeat }
-    
-    // Custom description for standard print statements
-    public var description: String {
-        return "SwtKeyEvent(key: \(key), modifier: \(modifier)), repeat: \(repeated), pressed: \(pressed), released: \(released)"
-    }
-
-    // Custom debug description for debug print statements
-    public var debugDescription: String {
-        return "SwtKeyEvent(sdl_event: \(event))"
-    }
+    var pressed:  Bool { return sdl_event.down }
+    var released: Bool { return !sdl_event.down }
+    var repeated: Bool { return sdl_event.repeat }
 }
 
 

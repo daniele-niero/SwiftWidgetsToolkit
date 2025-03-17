@@ -1,7 +1,7 @@
 import Foundation
 
 @MainActor
-public class SwtWidget: SwtObject, SwtPaintable {
+public class SwtWidget: SwtObject, SwtPaintable, SwtEventReceiver {
     internal var _style: SwtStyle? 
     public var style: SwtStyle {
         get {
@@ -24,4 +24,18 @@ public class SwtWidget: SwtObject, SwtPaintable {
     public func hide() {
         
     }
+
+    // MARK: - SwtEventReceiver
+    
+    public func event(_ event: SwtEvent) -> Bool {
+        return false
+    }
+
+    public func keyEvent(_ event: SwtKeyEvent) -> Bool {
+        return false
+    }
+
+    // public func paintEvent(_ event: SwtPaintEvent) -> Bool {
+    //     return false
+    // }
 }
