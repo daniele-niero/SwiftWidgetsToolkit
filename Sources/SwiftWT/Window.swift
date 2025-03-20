@@ -82,17 +82,15 @@ public class SwtWindow: SwtObject, SwtEventReceiver {
         do {
             let app = try SwtApp.get()
             // Register itself with the app.
-            app.mainWindows.append(self)
+            app.addMainWindow(self)
         } catch {
             print("Failed to get app: \(error)", asError: true)
             return
         }
     }
 
+
     /// Creates a new SDL3 window.
-    /// - Parameters:
-    ///   - flags: SDL window flags (default is 0).
-    ///   - parent: The title of the window.
     private func createSdlWindowAndRenderer(_ title: String, x: Int32, y: Int32, flags: WindowFlags) {
         var cWindowPtr: OpaquePointer?
         var cRendererPtr: OpaquePointer?
@@ -134,15 +132,7 @@ public class SwtWindow: SwtObject, SwtEventReceiver {
         }
     }
 
-    deinit {
-    //     do {
-    //         let app = try SwtApp.get()
-    //         // Unregister itself from the app.
-    //         app.mainWidgets.removeAll { $0 === self }
-    //     } catch {
-    //         print("Failed to get app: \(error)", asError: true)
-    //     }
-    }
+    // MARK: - Events Handlers implementation
 
     public func focusGainedEvent(_ event: SwtFocusEvent) { 
         active = true
@@ -154,4 +144,9 @@ public class SwtWindow: SwtObject, SwtEventReceiver {
         print("event lost: active: \(active)")
     }
 
+    public func paintEvent(_ event: SwtPaintEvent) {
+        for child in children {
+            (child as? SwtEventReceiver)?.paintEvent(event)
+        }
+    }
 }

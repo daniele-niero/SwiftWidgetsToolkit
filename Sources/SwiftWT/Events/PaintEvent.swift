@@ -16,7 +16,7 @@ public struct SwtRect {
 }
 
 
-public class PaintEvent: SwtEventBase {
+public class SwtPaintEvent: SwtEventBase {
     var rect: SwtRect
     var region: SwtRegion
 
