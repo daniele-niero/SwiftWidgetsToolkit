@@ -89,7 +89,6 @@ public class SwtWindow: SwtObject, SwtEventReceiver {
         }
     }
 
-
     /// Creates a new SDL3 window.
     private func createSdlWindowAndRenderer(_ title: String, x: Int32, y: Int32, flags: WindowFlags) {
         var cWindowPtr: OpaquePointer?
@@ -112,23 +111,14 @@ public class SwtWindow: SwtObject, SwtEventReceiver {
         rendererResource = SDLResource(pointer: validRendererPtr, destroy: SDL_DestroyRenderer)
     }
 
-    public func paint() {
-        guard let renderer = rendererResource?.rawPointer else {
-            print("Renderer is nil", asError: true)
+    /// Sets the opacity of the window.
+    private func setWindowOpacity(_ opacity: Float) {
+        guard let window = windowResource?.rawPointer else {
+            print("Window is nil", asError: true)
             return
         }
-
-        // Set the draw color to white.
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255)
-        // Clear the window with the draw color.
-        SDL_RenderClear(renderer)
-        // Present the renderer.
-        SDL_RenderPresent(renderer)
-
-        let painter = SwtPainter()
-
-        for child in children {
-            (child as? SwtPaintable)?.paint(painter: painter)
+        if SDL_SetWindowOpacity(window, opacity) == false {
+            print("Failed to set window opacity: \(String(cString: SDL_GetError()))", asError: true)
         }
     }
 
@@ -145,6 +135,20 @@ public class SwtWindow: SwtObject, SwtEventReceiver {
     }
 
     public func paintEvent(_ event: SwtPaintEvent) {
+        guard let renderer = rendererResource?.rawPointer else {
+            print("Renderer is nil", asError: true)
+            return
+        }
+
+        // Set the draw color to white.
+        SDL_SetRenderDrawColor(renderer, 255, 125, 155, 255)
+        setWindowOpacity(0.5)
+        // Clear the window with the draw color.
+        SDL_RenderClear(renderer)
+        // Present the renderer.
+        SDL_RenderPresent(renderer)
+
+        // let painter = SwtPainter()
         for child in children {
             (child as? SwtEventReceiver)?.paintEvent(event)
         }

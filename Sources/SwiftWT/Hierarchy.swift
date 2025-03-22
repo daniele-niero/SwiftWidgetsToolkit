@@ -9,15 +9,6 @@ public class SwtObject {
     
     /// The children of this object.
     internal var _children: [SwtObject] = []
-    
-    /// Initializes a new `SwtObject` with an optional parent.
-    /// - Parameter: parent: The parent of this object. 
-    ///                      If provided, this object will be added to the parent's children.
-    public init(parent: SwtObject? = nil) {
-        if (parent != nil) {
-            self.parent = parent
-        }
-    }
 
     public var parent : SwtObject? {
         get {
@@ -39,6 +30,14 @@ public class SwtObject {
         return _children
     }
     
+    /// Initializes a new `SwtObject` with an optional parent.
+    /// - Parameter: parent: The parent of this object. 
+    ///                      If provided, this object will be added to the parent's children.
+    public init(parent: SwtObject? = nil) {
+        if (parent != nil) {
+            self.parent = parent
+        }
+    }
 
     /// Adds a child to this object.
     /// Note: This function doesn't add the parent to the child's parent property.

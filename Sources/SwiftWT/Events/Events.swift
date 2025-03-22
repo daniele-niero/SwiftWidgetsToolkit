@@ -57,10 +57,6 @@ public class SwtEventBase {
 public class SwtFocusEvent: SwtEventBase {
     let _gainedFocus: Bool 
 
-    init (gainedFocus: Bool) {
-        _gainedFocus = gainedFocus
-    }  
-
     public var gotFocus: Bool {
         return _gainedFocus
     }
@@ -68,6 +64,10 @@ public class SwtFocusEvent: SwtEventBase {
     public var lostFocus: Bool {
         return !_gainedFocus
     }
+
+    init (gainedFocus: Bool) {
+        _gainedFocus = gainedFocus
+    }  
 }
 
 @MainActor
@@ -84,7 +84,7 @@ extension SwtEventReceiver where Self: SwtObject {
     public func focusGainedEvent(_ event: SwtFocusEvent) {}
     public func focusLostEvent(_ event: SwtFocusEvent) {} 
     public func keyEvent(_ event: SwtKeyEvent) {}
-    public func paintEvent(_ event: SwtPaintEvent) { }
+    public func paintEvent(_ event: SwtPaintEvent) {}
 }
 
 @MainActor
@@ -103,13 +103,4 @@ public func dispatchEvent(_ eventType: SwtEvent, to receiver: SwtEventReceiver) 
         default:
             receiver.event(eventType)
     } 
-}
-
-
-class WeakEventReceiver {
-    weak var receiver: (any SwtEventReceiver)?
-
-    init(receiver: any SwtEventReceiver) {
-        self.receiver = receiver
-    }
 }
