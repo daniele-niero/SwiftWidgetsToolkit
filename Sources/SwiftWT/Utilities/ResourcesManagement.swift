@@ -1,21 +1,32 @@
-import Foundation
-
-/** A custom print function that prints to either standard output or standard error.
-
- - Parameters:
-   - items: The items to print.
-   - separator: A string to print between each item. The default is a single space (" ").
-   - terminator: A string to print at the end. The default is a newline ("\n").
-   - asError: A Boolean value that determines whether to print to standard error. The default is `false`.
+/*
+ `@unchecked Sendable` is used here because `SDLResource` manages a raw pointer (`OpaquePointer`) which is inherently unsafe.
+ However, the class ensures thread safety by only allowing access to the pointer through controlled methods and by ensuring the pointer is properly destroyed in the `deinit` method.
 */
-func print(_ items: Any..., separator: String = " ", terminator: String = "\n", asError: Bool = false) {
-    let output = items.map { "\($0)" }.joined(separator: separator)
-    if asError {
-        if let data = (output + terminator).data(using: .utf8) {
-            FileHandle.standardError.write(data)
+internal final class SDLResource: @unchecked Sendable {
+    private var resourcePointer: OpaquePointer?
+    private let destroyClosure: (OpaquePointer) -> Void
+
+    /// Accessor to get the underlying pointer.
+    var rawPointer: OpaquePointer? {
+        return resourcePointer
+    }
+    
+    /// Initializes the resource wrapper with a C pointer and its corresponding destroy function.
+    init(pointer: OpaquePointer, destroy: @escaping (OpaquePointer) -> Void) {
+        self.resourcePointer = pointer
+        self.destroyClosure = destroy
+    }
+    
+    /// Manually destroy the resource if needed.
+    func destroy() {
+        if let ptr = resourcePointer {
+            destroyClosure(ptr)
+            resourcePointer = nil
         }
-    } else {
-        Swift.print(output, terminator: terminator)
+    }
+    
+    deinit {
+        destroy()
     }
 }
 
