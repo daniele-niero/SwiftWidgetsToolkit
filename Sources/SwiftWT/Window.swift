@@ -1,39 +1,6 @@
 
 import SDL3
 
-internal final class SDLResource: @unchecked Sendable {
-    private var pointer: OpaquePointer?
-    private let destroyClosure: (OpaquePointer) -> Void
-
-    /// Accessor to get the underlying pointer.
-    var rawPointer: OpaquePointer? {
-        return pointer
-    }
-    
-    /// Initializes the resource wrapper with a C pointer and its corresponding destroy function.
-    init(pointer: OpaquePointer, destroy: @escaping (OpaquePointer) -> Void) {
-        self.pointer = pointer
-        self.destroyClosure = destroy
-    }
-    
-    /// Manually destroy the resource if needed.
-    func destroy() {
-        if let ptr = pointer {
-            destroyClosure(ptr)
-            pointer = nil
-        }
-    }
-    
-    deinit {
-        destroy()
-    }
-}
-
-public struct SwtSize {
-    public var width: Int32
-    public var height: Int32
-}
-
 @MainActor
 public class SwtWindow: SwtObject, SwtEventReceiver {
     // Local variables to receive the window and renderer pointers.
@@ -58,9 +25,10 @@ public class SwtWindow: SwtObject, SwtEventReceiver {
 
     public var size: SwtSize {
         get {
-            var size = SwtSize(width: 0, height: 0)
-            SDL_GetWindowSize(windowResource?.rawPointer, &size.width, &size.height)
-            return size
+            var h: Int32 = 0
+            var w: Int32 = 0
+            SDL_GetWindowSize(windowResource?.rawPointer, &w, &h)
+            return SwtSize(width: w, height: h)
         }
         set {
             SDL_SetWindowSize(windowResource?.rawPointer, newValue.width, newValue.height)
