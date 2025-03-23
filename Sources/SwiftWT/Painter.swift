@@ -23,7 +23,7 @@ public protocol SwtPaintable {
 // }
 
 
-public class SwtPainter {
+public final class SwtPainter {
     struct RendererState {
         let drawColor: (UInt8, UInt8, UInt8, UInt8)
         let blendMode: SDL_BlendMode
