@@ -103,6 +103,8 @@ public class SwtWindow: SwtObject, SwtEventReceiver {
     }
 
     public func paintEvent(_ event: SwtPaintEvent) {
+        event.painter.clear()
+
         for child in children {
             (child as? SwtEventReceiver)?.paintEvent(event)
         }
@@ -125,7 +127,7 @@ public class SwtWindow: SwtObject, SwtEventReceiver {
                 eventType = .keyPressed(SwtKeyEvent(event: sdlEvent.key))
             case SDL_EVENT_KEY_UP:
                 eventType = .keyReleased(SwtKeyEvent(event: sdlEvent.key))
-            case SDL_EVENT_WINDOW_MOVED: //, SDL_EVENT_WINDOW_MINIMIZED, SDL_EVENT_WINDOW_MAXIMIZED:
+            case SDL_EVENT_WINDOW_MOVED, SDL_EVENT_WINDOW_MINIMIZED, SDL_EVENT_WINDOW_MAXIMIZED, SDL_EVENT_WINDOW_SHOWN:
                 eventType = .paint(SwtPaintEvent(self.rendererResource!))
             default:
                 eventType = .unknown

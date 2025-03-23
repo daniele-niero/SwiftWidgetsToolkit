@@ -8,8 +8,6 @@ func main() -> EAppResult{
     }
     let widget = SwtWidget()
     widget.show()
-    let window = widget.parent as! SwtWindow
-    print(window.size)
     return app.run()
 }
 

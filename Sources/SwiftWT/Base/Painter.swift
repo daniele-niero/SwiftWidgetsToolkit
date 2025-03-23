@@ -24,29 +24,33 @@ public protocol SwtPaintable {
 
 
 public final class SwtPainter {
-    struct RendererState {
-        let drawColor: (UInt8, UInt8, UInt8, UInt8)
+    struct State {
+        let drawColor: SwtColor
+        let fillColor: SwtColor
         let blendMode: SDL_BlendMode
     }
 
     private var renderer: SDLResource
-    private var stateStack: [RendererState] = []
+    private var stateStack: [State] = []
+    public var drawColor: SwtColor = .white
+    public var fillColor: SwtColor = .black
 
     internal init(_ renderer: SDLResource) {
         self.renderer = renderer
     }
+
+    private static func setColor(_ renderer: OpaquePointer!, _ color: SwtColor) {
+        SDL_SetRenderDrawColor(renderer, color.red, color.green, color.blue, color.alpha)
+    }
     
     func save() {
         guard let renderer = self.renderer.rawPointer else { return }
-        // Query current draw color
-        var r: UInt8 = 0, g: UInt8 = 0, b: UInt8 = 0, a: UInt8 = 0
-        SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a)
         
         // Query current blend mode
         var blendMode = SDL_BlendMode(SDL_BLENDMODE_NONE)
         SDL_GetRenderDrawBlendMode(renderer, &blendMode)
 
-        let state = RendererState(drawColor: (r, g, b, a), blendMode: blendMode)
+        let state = State(drawColor: drawColor, fillColor: fillColor, blendMode: blendMode)
         stateStack.append(state)
     }
     
@@ -54,20 +58,19 @@ public final class SwtPainter {
         guard let renderer = self.renderer.rawPointer else { return }
 
         guard let state = stateStack.popLast() else { return }
+        self.drawColor = state.drawColor
+        self.fillColor = state.fillColor
+
+        SwtPainter.setColor(renderer, drawColor)
         
-        // Restore draw color
-        SDL_SetRenderDrawColor(renderer,
-                               state.drawColor.0,
-                               state.drawColor.1,
-                               state.drawColor.2,
-                               state.drawColor.3)
         // Restore blend mode
         SDL_SetRenderDrawBlendMode(renderer, state.blendMode)
     }
 
-    public func setDrawColor(r: UInt8, g: UInt8, b: UInt8, a: UInt8) {
+    public func clear() {
         guard let renderer = self.renderer.rawPointer else { return }
-        SDL_SetRenderDrawColor(renderer, r, g, b, a)
+        SwtPainter.setColor(renderer, fillColor)
+        SDL_RenderClear(renderer)
     }
 
     public func present() {
@@ -80,9 +83,21 @@ public final class SwtPainter {
     public func drawRect(x: Int32, y: Int32, width: Int32, height: Int32) {
         guard let renderer = self.renderer.rawPointer else { return }
 
+        SwtPainter.setColor(renderer, drawColor)
+
         var sdlRect = SDL_FRect(x: Float(x), y: Float(y), w: Float(width), h: Float(height))
         // Draw the rectangle outline
         SDL_RenderRect(renderer, &sdlRect)
+    }
+
+    public func fillRect(x: Int32, y: Int32, width: Int32, height: Int32) {
+        guard let renderer = self.renderer.rawPointer else { return }
+
+        SwtPainter.setColor(renderer, fillColor)
+
+        var sdlRect = SDL_FRect(x: Float(x), y: Float(y), w: Float(width), h: Float(height))
+        // Draw the rectangle outline
+        SDL_RenderFillRect(renderer, &sdlRect)
     }
 }
 
