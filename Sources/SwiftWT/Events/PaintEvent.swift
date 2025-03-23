@@ -17,10 +17,12 @@ public struct SwtRect {
 
 
 public class SwtPaintEvent: SwtEventBase {
-    var rect: SwtRect
-    var region: SwtRegion
+    public var rect: SwtRect
+    public var region: SwtRegion
+    public var painter: SwtPainter
 
-    override init () {
+    init (_ renderer: SDLResource) {
+        painter = SwtPainter(renderer)
         rect = SwtRect(x: 0, y: 0, width: 10, height: 10)
         region = SwtRegion(x: 0, y: 0, width: 10, height: 10)
     }

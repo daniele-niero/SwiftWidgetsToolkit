@@ -102,34 +102,7 @@ public class SwtApp {
         var sdlEvent = SDL_Event()
         while running {
             while SDL_PollEvent(&sdlEvent) {
-                let sdlEventType = SDL_EventType(Int32(sdlEvent.type))
-                switch sdlEventType {
-
-                    case SDL_EVENT_QUIT:
-                        quit()
-                        break
-                        
-                    case SDL_EVENT_WINDOW_FOCUS_GAINED:
-                        for window in mainWindows {
-                            if window.windowID == sdlEvent.window.windowID {
-                                window.focusGainedEvent(SwtFocusEvent(gainedFocus: true))
-                            } 
-                        }
-
-                    case SDL_EVENT_WINDOW_FOCUS_LOST:
-                        for window in mainWindows {
-                            if window.windowID == sdlEvent.window.windowID {
-                                window.focusGainedEvent(SwtFocusEvent(gainedFocus: false))
-                            } 
-                        }
-
-                    default:
-                        for window in mainWindows {
-                            if window.active {
-                                dispatchEvent(SwtEvent(sdlEvent), to: window)
-                            }
-                        }
-                }
+                handleOrDispatchEvents(sdlEvent)
             }
             // Insert a delay if necessary (e.g. for frame limiting)
             SDL_Delay(16)
@@ -137,6 +110,36 @@ public class SwtApp {
         
         // Cleanup happens in deinit.
         return EAppResult.success
+    }
+
+    func handleOrDispatchEvents(_ sdlEvent: SDL_Event) {
+        let sdlEventType = SDL_EventType(Int32(sdlEvent.type))
+        switch sdlEventType {
+            case SDL_EVENT_QUIT:
+                quit()
+                break
+                
+            case SDL_EVENT_WINDOW_FOCUS_GAINED:
+                for window in mainWindows {
+                    if window.windowID == sdlEvent.window.windowID {
+                        window.focusGainedEvent(SwtFocusEvent(gainedFocus: true))
+                    } 
+                }
+
+            case SDL_EVENT_WINDOW_FOCUS_LOST:
+                for window in mainWindows {
+                    if window.windowID == sdlEvent.window.windowID {
+                        window.focusGainedEvent(SwtFocusEvent(gainedFocus: false))
+                    } 
+                }
+
+            default:
+                for window in mainWindows {
+                    if window.active {
+                        window.dispatchLowLevelEvent(sdlEvent)
+                    }
+                }
+        }
     }
     
     public func quit() {

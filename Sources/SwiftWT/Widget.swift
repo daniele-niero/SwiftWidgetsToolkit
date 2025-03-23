@@ -19,6 +19,10 @@ public class SwtWidget: SwtObject, /*SwtPaintable,*/ SwtEventReceiver {
     // MARK: - SwtEventReceiver
     
     public func paintEvent(_ event: SwtPaintEvent) {
+        event.painter.save()
+        event.painter.setDrawColor(r: 255, g: 0, b: 0, a: 255)
+        event.painter.drawRect(x: 0, y: 0, width: 100, height: 100)
+        event.painter.restore()
         print("Widget paint requested")
     }
 }

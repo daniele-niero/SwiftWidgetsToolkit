@@ -122,7 +122,7 @@ public class SwtWindow: SwtObject, SwtEventReceiver {
         }
     }
 
-    // MARK: - Events Handlers implementation
+    // MARK: - Events Handlers Implementation
 
     public func focusGainedEvent(_ event: SwtFocusEvent) { 
         active = true
@@ -135,22 +135,34 @@ public class SwtWindow: SwtObject, SwtEventReceiver {
     }
 
     public func paintEvent(_ event: SwtPaintEvent) {
-        guard let renderer = rendererResource?.rawPointer else {
-            print("Renderer is nil", asError: true)
-            return
-        }
-
-        // Set the draw color to white.
-        SDL_SetRenderDrawColor(renderer, 255, 125, 155, 255)
-        setWindowOpacity(0.5)
-        // Clear the window with the draw color.
-        SDL_RenderClear(renderer)
-        // Present the renderer.
-        SDL_RenderPresent(renderer)
-
-        // let painter = SwtPainter()
         for child in children {
             (child as? SwtEventReceiver)?.paintEvent(event)
         }
+
+        event.painter.present()
+    }
+
+    func dispatchLowLevelEvent(_ sdlEvent: SDL_Event) {
+        let type = SDL_EventType(Int32(sdlEvent.type))
+        
+        var eventType: SwtEvent
+        switch type {
+            case SDL_EVENT_QUIT:
+                eventType = .quit
+            case SDL_EVENT_WINDOW_FOCUS_GAINED:
+                eventType = .focusGained(SwtFocusEvent(gainedFocus: true))
+            case SDL_EVENT_WINDOW_FOCUS_LOST:
+                eventType = .focusLost(SwtFocusEvent(gainedFocus: false))
+            case SDL_EVENT_KEY_DOWN:
+                eventType = .keyPressed(SwtKeyEvent(event: sdlEvent.key))
+            case SDL_EVENT_KEY_UP:
+                eventType = .keyReleased(SwtKeyEvent(event: sdlEvent.key))
+            case SDL_EVENT_WINDOW_MOVED: //, SDL_EVENT_WINDOW_MINIMIZED, SDL_EVENT_WINDOW_MAXIMIZED:
+                eventType = .paint(SwtPaintEvent(self.rendererResource!))
+            default:
+                eventType = .unknown
+        }
+
+        dispatchEvent(eventType, to: self)
     }
 }
