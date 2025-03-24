@@ -1,7 +1,7 @@
 import Foundation
 
 @MainActor
-public class SwtWidget: SwtObject, /*SwtPaintable,*/ SwtEventReceiver {
+open class SwtWidget: SwtObject, /*SwtPaintable,*/ SwtEventReceiver {
     private var window: SwtWindow? = nil
 
     public func show() {
@@ -25,6 +25,5 @@ public class SwtWidget: SwtObject, /*SwtPaintable,*/ SwtEventReceiver {
         event.painter.fillRect(x: 0, y: 0, width: 100, height: 100)
         event.painter.drawRect(x: 0, y: 0, width: 100, height: 100)
         event.painter.restore()
-        print("Widget paint requested")
     }
 }

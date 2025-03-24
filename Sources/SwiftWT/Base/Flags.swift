@@ -63,5 +63,4 @@ public struct WindowFlags: OptionSet, Sendable {
     static let transparent          = WindowFlags(rawValue: 0x0000000040000000)    
     /// window should not be focusable
     static let notFocusable         = WindowFlags(rawValue: 0x0000000080000000)    
-
 }

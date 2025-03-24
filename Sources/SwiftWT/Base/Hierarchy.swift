@@ -2,7 +2,7 @@
 /// A class representing an object in the Swift Widget Toolkit (SWT) hierarchy.
 /// Each `SwtObject` can have a parent and multiple children, forming a tree structure.
 @MainActor
-public class SwtObject {
+open class SwtObject {
 
     /// The parent of this object. It is a weak reference to avoid retain cycles.
     internal weak var _parent: SwtObject?
