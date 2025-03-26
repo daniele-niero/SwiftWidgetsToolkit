@@ -32,8 +32,8 @@ public final class SwtPainter {
 
     private var renderer: SDLResource
     private var stateStack: [State] = []
-    public var drawColor: SwtColor = .white
-    public var fillColor: SwtColor = .black
+    public var drawColor: SwtColor = SwtGlobalColor.white
+    public var fillColor: SwtColor = SwtGlobalColor.black
 
     internal init(_ renderer: SDLResource) {
         self.renderer = renderer
@@ -42,10 +42,10 @@ public final class SwtPainter {
     private static func setColor(_ renderer: OpaquePointer!, _ color: SwtColor) {
         SDL_SetRenderDrawColor(renderer, color.red, color.green, color.blue, color.alpha)
     }
-    
+
     func save() {
         guard let renderer = self.renderer.rawPointer else { return }
-        
+
         // Query current blend mode
         var blendMode = SDL_BlendMode(SDL_BLENDMODE_NONE)
         SDL_GetRenderDrawBlendMode(renderer, &blendMode)
@@ -53,7 +53,7 @@ public final class SwtPainter {
         let state = State(drawColor: drawColor, fillColor: fillColor, blendMode: blendMode)
         stateStack.append(state)
     }
-    
+
     func restore() {
         guard let renderer = self.renderer.rawPointer else { return }
 
@@ -62,7 +62,7 @@ public final class SwtPainter {
         self.fillColor = state.fillColor
 
         SwtPainter.setColor(renderer, drawColor)
-        
+
         // Restore blend mode
         SDL_SetRenderDrawBlendMode(renderer, state.blendMode)
     }
@@ -77,8 +77,8 @@ public final class SwtPainter {
         guard let renderer = self.renderer.rawPointer else { return }
         SDL_RenderPresent(renderer)
     }
-    
-    // Other drawing methods...
+
+    // MARK: Drawing methods
 
     public func drawRect(x: Int32, y: Int32, width: Int32, height: Int32) {
         guard let renderer = self.renderer.rawPointer else { return }
@@ -98,6 +98,12 @@ public final class SwtPainter {
         var sdlRect = SDL_FRect(x: Float(x), y: Float(y), w: Float(width), h: Float(height))
         // Draw the rectangle outline
         SDL_RenderFillRect(renderer, &sdlRect)
+    }
+
+    public func drawRoundedRect(x: Int32, y: Int32, width: Int32, height: Int32, radius: Float) {
+        guard let renderer = self.renderer.rawPointer else { return }
+
+
     }
 }
 
