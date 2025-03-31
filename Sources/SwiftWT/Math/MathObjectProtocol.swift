@@ -1,4 +1,4 @@
-public protocol MathObjectProtocol: CustomStringConvertible, Sequence, Decodable, Encodable, Hashable {
+public protocol SwtMathObjectProtocol: CustomStringConvertible, Sequence, Decodable, Encodable, Hashable {
     associatedtype Scalar: SIMDScalar
 
     var indices: Range<Int> { get }
@@ -18,7 +18,7 @@ public protocol MathObjectProtocol: CustomStringConvertible, Sequence, Decodable
 }
 
 
-extension MathObjectProtocol {
+extension SwtMathObjectProtocol {
     @inlinable
     internal func commonDescription() -> String {
         var returnString: String = "\(type(of: self))("

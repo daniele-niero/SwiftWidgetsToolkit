@@ -1,15 +1,9 @@
- enum NMathErrors: Error {
-    case LengthIsZero(String)
-    case OutOfRange(String)
-    case DivisionByZero(String)
- }
-
- public enum Unit: String, Codable {
+public enum SwtAngleUnit: String, Codable {
     case degrees
     case radians
 }
 
-public enum RotationOrder: Int {
+public enum SwtRotationOrder: Int {
     case XYZ = 0
     case XZY = 1
     case YXZ = 2
@@ -18,7 +12,7 @@ public enum RotationOrder: Int {
     case ZYX = 5
 }
 
-public enum Axis: Int {
+public enum SwtAxis: Int {
     case NEGX = -1
     case NEGY = -2
     case NEGZ = -3
@@ -42,7 +36,7 @@ public enum Axis: Int {
     }
 }
 
-public enum CartesianPlane{
+public enum SwtCartesianPlane{
     case XY
     case YZ
     case ZX

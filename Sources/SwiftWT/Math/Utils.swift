@@ -47,7 +47,7 @@ public func almostEqual<Scalar: BinaryFloatingPoint>(_ a: Scalar, _ b: Scalar, r
     return diff <= abs(relTol * b) || diff <= abs(relTol * a) || diff <= absTol
 }
 
-public func almostEqual<T: MathObjectProtocol>(_ a: T, _ b: T, relTol: T.Scalar = T.Scalar.ulpOfOne.squareRoot(), absTol: T.Scalar = 0.0) -> Bool
+public func almostEqual<T: SwtMathObjectProtocol>(_ a: T, _ b: T, relTol: T.Scalar = T.Scalar.ulpOfOne.squareRoot(), absTol: T.Scalar = 0.0) -> Bool
 where T.Scalar: BinaryFloatingPoint {
     for i in 0..<a.count {
         if !almostEqual(a[i], b[i], relTol: relTol, absTol: absTol) {

@@ -3,9 +3,9 @@
 /** 
 A generic struct representing a mathematical matrix.
  
-The `Matrix` struct conforms to the `MathObjectProtocol`, `Decodable`, `Encodable`, and `Hashable` protocols.
+The `SwtMatrix` struct conforms to the `SwtMathObjectProtocol`
 */
-public struct Matrix<Scalar>: MathObjectProtocol, Decodable, Encodable, Hashable
+public struct SwtMatrix<Scalar>: SwtMathObjectProtocol
 where Scalar: SIMDScalar, Scalar: BinaryFloatingPoint
 {
 
@@ -18,8 +18,6 @@ where Scalar: SIMDScalar, Scalar: BinaryFloatingPoint
         SIMD4<Scalar>(0.0, 0.0, 0.0, 1.0)
     )
 
-    public init() {}
-
     public var indices: Range<Int> {
         get { return 0 ..< 16 }
     }
@@ -28,13 +26,15 @@ where Scalar: SIMDScalar, Scalar: BinaryFloatingPoint
         get { return 16 }
     }
 
+    public init() {}
+
     @inlinable
     public init(_ array: [Scalar]) {
         self.set(array);
     }
 
     @inlinable
-    public init(_ other: Matrix<Scalar>) {
+    public init(_ other: SwtMatrix<Scalar>) {
         _data.0 = other._data.0
         _data.1 = other._data.1
         _data.2 = other._data.2
@@ -70,11 +70,11 @@ where Scalar: SIMDScalar, Scalar: BinaryFloatingPoint
 
     // Init that takes 4 Vectors
     @inlinable
-    public init(_ v0: Vector4<Scalar>, _ v1: Vector4<Scalar>, _ v2: Vector4<Scalar>, _ v3: Vector4<Scalar>) {
-        self._data.0 = v0._simdData
-        self._data.1 = v1._simdData
-        self._data.2 = v2._simdData
-        self._data.3 = v3._simdData
+    public init(_ v0: SwtVector4<Scalar>, _ v1: SwtVector4<Scalar>, _ v2: SwtVector4<Scalar>, _ v3: SwtVector4<Scalar>) {
+        self._data.0 = v0._data
+        self._data.1 = v1._data
+        self._data.2 = v2._data
+        self._data.3 = v3._data
     }
 
     //implement the Decodable protocol
@@ -145,7 +145,7 @@ where Scalar: SIMDScalar, Scalar: BinaryFloatingPoint
         }
     }
 
-    public mutating func set(_ other: Matrix<Scalar>) {
+    public mutating func set(_ other: SwtMatrix<Scalar>) {
         _data.0 = other._data.0
         _data.1 = other._data.1
         _data.2 = other._data.2
@@ -248,15 +248,15 @@ where Scalar: SIMDScalar, Scalar: BinaryFloatingPoint
         }
     }
 
-    public static func == (lhs: Matrix<Scalar>, rhs: Matrix<Scalar>) -> Bool {
+    public static func == (lhs: SwtMatrix<Scalar>, rhs: SwtMatrix<Scalar>) -> Bool {
         return lhs._data.0 == rhs._data.0 &&
                lhs._data.1 == rhs._data.1 &&
                lhs._data.2 == rhs._data.2 &&
                lhs._data.3 == rhs._data.3
     }
 
-    public static func * (lhs: Matrix<Scalar>, rhs: Matrix<Scalar>) -> Matrix<Scalar> {
-        var result = Matrix<Scalar>()
+    public static func * (lhs: SwtMatrix<Scalar>, rhs: SwtMatrix<Scalar>) -> SwtMatrix<Scalar> {
+        var result = SwtMatrix<Scalar>()
 
         for row in 0..<4 {
             for col in 0..<4 {
@@ -276,8 +276,8 @@ where Scalar: SIMDScalar, Scalar: BinaryFloatingPoint
      
      - Returns: The inverse of the matrix.
      */
-    public func inverse() -> Matrix<Scalar> {
-        var result = Matrix<Scalar>()
+    public func inverse() -> SwtMatrix<Scalar> {
+        var result = SwtMatrix<Scalar>()
 
         let a0: Scalar = _data.0[0] * _data.1[1] - _data.0[1] * _data.1[0]
         let a1: Scalar = _data.0[0] * _data.1[2] - _data.0[2] * _data.1[0]
@@ -331,7 +331,5 @@ where Scalar: SIMDScalar, Scalar: BinaryFloatingPoint
         result._data.3 *= invDet
 
         return result
-    }
-
-    
+    } 
 }
