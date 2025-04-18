@@ -8,7 +8,6 @@ public protocol SwtVectorProtocol: SwtMathObjectProtocol {
     mutating func set(_ rawData: DataType)
 }
 
-
 public extension SwtVectorProtocol {
     @inlinable
     func hash(into hasher: inout Hasher) {
@@ -54,9 +53,17 @@ public extension SwtVectorProtocol {
     }
 }
 
+public extension SwtVectorProtocol where Scalar: AdditiveArithmetic {
+    mutating func setToIdentity() {
+        for i in _data.indices {
+            self._data[i] = .zero
+        }
+    }
+}
+
 //--------------------------------------------------------------------------------
 // MARK: Accessors Extensions
-// Various extension for implementing set and _data accessors for 
+// Various extension for implementing set and _data accessors for
 // Vectors of different size
 //--------------------------------------------------------------------------------
 

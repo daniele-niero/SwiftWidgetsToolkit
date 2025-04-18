@@ -27,7 +27,7 @@ extension SwtMathObjectProtocol {
             if i < (self.count - 1) {
                 returnString += ", "
             }
-        } 
+        }
         returnString += ")"
         return returnString
     }

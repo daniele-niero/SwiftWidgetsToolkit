@@ -1,8 +1,47 @@
-import Foundation 
+import Foundation
+
+
+public struct SwtVector2<Scalar>: SwtVectorProtocol
+where Scalar: SIMDScalar & AdditiveArithmetic
+{
+    public var _data = SIMD2<Scalar>()
+
+    public init() {}
+
+    @inlinable
+    public init(_ x: Scalar, _ y: Scalar) {
+        self._data[0] = x
+        self._data[1] = y
+    }
+
+    @inlinable
+    public init(_ other: SwtVector2<Scalar>) {
+        self._data = other._data
+    }
+
+    @inlinable
+    public init(_ array: [Scalar]) {
+        if array.count == 2 {
+            self._data[0] = array[0]
+            self._data[1] = array[1]
+        }
+        else {
+            let count: Int = Swift.min(array.count, self.count)
+            for i in 0 ..< count {
+                self._data[i] = array[i]
+            }
+        }
+    }
+
+    @inlinable
+    public init(_ rawData: SIMD2<Scalar>) {
+        self._data = rawData
+    }
+}
 
 
 public struct SwtVector3<Scalar>: SwtVectorProtocol
-where Scalar: SIMDScalar
+where Scalar: SIMDScalar & AdditiveArithmetic
 {
     public var _data = SIMD3<Scalar>()
 
@@ -39,18 +78,11 @@ where Scalar: SIMDScalar
     public init(_ rawData: SIMD3<Scalar>) {
         self._data = rawData
     }
-
-    public mutating func setToIdentity() {
-        for i in _data.indices {
-            self._data[i] = 0 as! Scalar
-        }
-    }
 }
 
 
-
 public struct SwtVector4<Scalar>: SwtVectorProtocol
-where Scalar: SIMDScalar, Scalar: BinaryFloatingPoint
+where Scalar: SIMDScalar & AdditiveArithmetic
 {
     public var _data = SIMD4<Scalar>()
 

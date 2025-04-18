@@ -1,13 +1,6 @@
 import Foundation
 
 public extension SwtVectorProtocol where Scalar: BinaryFloatingPoint {
-    @inlinable
-    mutating func setToIdentity() {
-        for i in _data.indices {
-            self._data[i] = 0.0
-        }
-    }
-
     func lerp(with other: Self, lerpFactor: Scalar) -> Self {
         var data = other._data - self._data
         data *= clamped(lerpFactor, from: 0.0, to: 1.0)
@@ -118,7 +111,7 @@ public extension SwtVectorProtocol where Scalar: BinaryFloatingPoint {
         let len = self.length()
         let tol: Scalar = 1e-9
         if almostZero(len, tol: tol) {
-            throw SwtMathErrors.LengthIsZero("Cannot normalize a Vector if its length is zero")
+            throw SwtMathErrors.LengthIsZero
         }
         return 1.0 / len
     }

@@ -1,12 +1,5 @@
 
 public extension SwtVectorProtocol where Scalar: FixedWidthInteger {
-    /// Sets all elements in the vector to 0, essentially resetting the vector.
-    @inlinable mutating func setToIdentity() {
-        for i in indices {
-            self._data[i] = 0
-        }
-    }
-
     @inlinable static prefix func - (lhs: Self) -> Self where Scalar: SignedInteger {
         var result = Self()
         for i in lhs.indices {
